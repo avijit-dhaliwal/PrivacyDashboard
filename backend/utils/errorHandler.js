@@ -1,10 +1,18 @@
-function errorHandler(err, req, res, next) {
+const errorHandler = (err, req, res, next) => {
     console.error(err.stack);
   
-    res.status(500).json({
-      message: 'An unexpected error occurred',
-      error: process.env.NODE_ENV === 'production' ? {} : err
+    let statusCode = err.statusCode || 500;
+    let message = err.message || 'Internal Server Error';
+  
+    if (process.env.NODE_ENV === 'production') {
+      message = statusCode === 500 ? 'Internal Server Error' : message;
+    }
+  
+    res.status(statusCode).json({
+      status: 'error',
+      statusCode,
+      message
     });
-  }
+  };
   
   module.exports = errorHandler;
